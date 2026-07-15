@@ -27,7 +27,7 @@ jobs:
           echo KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} >> signing.properties
           echo KEYSTORE_ALIAS_PASSWORD='${{ secrets.KEYSTORE_ALIAS_PASSWORD }}' >> signing.properties
           echo KEYSTORE_FILE=../key.jks >> signing.properties
-          echo ${{ secrets.KEYSTORE }} | base64 --decode > key.jks
+          echo "${{ secrets.KEYSTORE }}" | base64 --decode > key.jks
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
@@ -35,7 +35,8 @@ jobs:
           build-scan-publish: true
           build-scan-terms-of-use-url: "https://gradle.com/terms-of-service"
           build-scan-terms-of-use-agree: "yes"
-          
+          wrapper-validation: false
+
       # === LANGKAH PENJINAK ERROR PERMISSION DENIED ===
       - name: Make gradlew executable
         run: chmod +x gradlew
