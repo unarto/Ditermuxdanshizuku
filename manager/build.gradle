@@ -28,15 +28,6 @@ android {
         prefab true
         compose true
     }
-    
-    splits {
-        abi {
-            enable true
-            reset()
-            include "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
-            universalApk false
-        }
-    }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.10"
     }
@@ -58,6 +49,7 @@ android {
     externalNativeBuild {
         cmake {
             path 'src/main/jni/CMakeLists.txt'
+            version = "3.31.0+"
         }
     }
 
@@ -125,10 +117,8 @@ afterEvaluate {
 }
 
 android.applicationVariants.configureEach { variant ->
-    variant.outputs.configureEach { output ->
-        def abiFilter = output.getFilter(com.android.build.OutputFile.ABI)
-        def abiName = abiFilter != null ? "-${abiFilter}" : ""
-        outputFileName = "shizuku-v${variant.versionName}-${variant.name}${abiName}.apk"
+    variant.outputs.configureEach {
+        outputFileName = "shizuku-v${variant.versionName}-${variant.name}.apk"
 
         variant.assembleProvider.get().doLast {
             def outDir = new File(rootDir, "out")
@@ -139,12 +129,12 @@ android.applicationVariants.configureEach { variant ->
                 copy {
                     from variant.mappingFileProvider.get()
                     into mappingDir
-                    rename { String fileName -> "mapping-${variant.versionName}${abiName}.txt" }
+                    rename { String fileName -> "mapping-${variant.versionName}.txt" }
                 }
-            }
-            copy {
-                from output.outputFile
-                into apkDir
+                copy {
+                    from outputFile
+                    into apkDir
+                }
             }
         }
     }
